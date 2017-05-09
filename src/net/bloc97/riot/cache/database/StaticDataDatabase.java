@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.bloc97.riot.cache;
+package net.bloc97.riot.cache.database;
 
 import net.bloc97.riot.cache.cached.GenericMapCache;
 import net.bloc97.riot.cache.cached.GenericObjectCache;
@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import net.bloc97.helpers.Levenshtein;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
@@ -42,13 +43,14 @@ import net.rithms.riot.constant.Platform;
  * @author bowen
  */
 public class StaticDataDatabase {
+    private static final long LIFE = TimeUnit.HOURS.toMillis(2); //Caching Time to live
     public final int version = 3;
     
     private final RiotApi rApi;
     private final Platform platform;
     
-    private final Map<Class, GenericObjectCache> listCache; //A Map of "List Objects"
-    private final Map<Class, GenericMapCache> entryCache; //A Map of "Map of Objects"
+    private final Map<Class, GenericObjectCache> listCache; //A Map of "List Objects", Maps Class Type to the List Object
+    private final Map<Class, GenericMapCache> entryCache; //A Map of "Map of Objects", Maps Class Type to a Map of Objects
     
     
     public StaticDataDatabase(Platform platform, RiotApi rApi) {
@@ -87,7 +89,7 @@ public class StaticDataDatabase {
             listCache.remove(type);
         }
         if (data != null) {
-            listCache.put(type, new GenericObjectCache(data, now));
+            listCache.put(type, new GenericObjectCache(data, now, LIFE));
         }
         return data;
     }
@@ -110,7 +112,7 @@ public class StaticDataDatabase {
             entryCache.get(type).map.remove(id);
         }
         if (data != null) {
-            entryCache.get(type).map.put(id, new GenericObjectCache(data, now));
+            entryCache.get(type).map.put(id, new GenericObjectCache(data, now, LIFE));
         }
         return data;
     }

@@ -21,6 +21,8 @@ The documentation for riot-api-java can be found [here.](http://taycaldwell.com/
 
 ## API Versions
 The current version of this library supports, and only supports the following Riot Games API versions:
+- **CHAMPION-MASTERY-V3**
+- **LEAGUE-V3**
 - **STATIC-DATA-V3**
 - **SUMMONER-V3**
 

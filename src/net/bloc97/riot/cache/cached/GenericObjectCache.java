@@ -14,12 +14,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class GenericObjectCache<T> extends ObjectCache {
     
-    private static final long LIFE = TimeUnit.MINUTES.toMillis(10);
-    
     public final T object;
     
-    public GenericObjectCache(T data, Date currentDate) {
-        super(currentDate, LIFE);
+    public GenericObjectCache(T data, Date currentDate, long life) {
+        super(currentDate, life);
         this.object = data;
     }
     public T getObject() {

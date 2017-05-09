@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.bloc97.riot.cache;
+package net.bloc97.riot.cache.database;
 
 import net.bloc97.riot.cache.cached.GenericObjectCache;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
@@ -19,12 +20,13 @@ import net.rithms.riot.constant.Platform;
  * @author bowen
  */
 public class SummonerDatabase {
+    private static final long LIFE = TimeUnit.MINUTES.toMillis(20); //Caching Time to live
     public final int version = 3;
     
     private final RiotApi rApi;
     private final Platform platform;
     
-    private final Map<Long, GenericObjectCache<Summoner>> summonerCache; //A Map of "Map of Objects"
+    private final Map<Long, GenericObjectCache<Summoner>> summonerCache; //Maps summoner ID to summoner
     
     public SummonerDatabase(Platform platform, RiotApi rApi) {
         this.rApi = rApi;
@@ -43,7 +45,7 @@ public class SummonerDatabase {
             summonerCache.remove(id);
         }
         if (data != null) {
-            summonerCache.put(id, new GenericObjectCache(data, now));
+            summonerCache.put(id, new GenericObjectCache(data, now, LIFE));
         }
         return data;
     }
@@ -55,7 +57,7 @@ public class SummonerDatabase {
             System.out.println(ex);
         }
         if (data != null) {
-            summonerCache.put(data.getId(), new GenericObjectCache(data, now));
+            summonerCache.put(data.getId(), new GenericObjectCache(data, now, LIFE));
         }
         return data;
     }
@@ -67,7 +69,7 @@ public class SummonerDatabase {
             System.out.println(ex);
         }
         if (data != null) {
-            summonerCache.put(data.getId(), new GenericObjectCache(data, now));
+            summonerCache.put(data.getId(), new GenericObjectCache(data, now, LIFE));
         }
         return data;
     }
