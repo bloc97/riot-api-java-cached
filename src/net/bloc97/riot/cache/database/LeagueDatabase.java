@@ -128,10 +128,10 @@ public class LeagueDatabase {
             return updateLeague(rank, queue, now);
         }
     }
-    public Map<String, List<LeagueList>> getLeagueBySummoner(long id) {
+    public List<LeagueList> getLeagueBySummoner(long id) {
         Date now = new Date();
         
-        GenericObjectCache<Map<String, List<LeagueList>>> cache = leaguesCache.get(id);
+        GenericObjectCache<List<LeagueList>> cache = leaguesCache.get(id);
         if (cache == null) {
             return updateLeagueBySummoner(id, now);
         }
