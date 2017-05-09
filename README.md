@@ -33,7 +33,7 @@ The current version of this library supports, and only supports the following Ri
 - **SUMMONER-V3**
 
 *The two Tournament methods in MATCH-V3 are not cached, but are still included for completeness.  
-\*\*The language methods are not included in this API, please use riot-api-java methods instead.
+\*\*The language method is not fully supported, you can only use them for the default locale. For other locales, please use riot-api-java methods instead.
 
 Note: the TOURNAMENT APIs will probably never be cached, as it is unadvised to cache data that is both written and read from multiple clients without controlling the server.  
 However, you would still be able to access them through uncached functions.
