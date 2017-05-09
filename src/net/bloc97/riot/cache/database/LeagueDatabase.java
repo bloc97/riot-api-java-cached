@@ -41,7 +41,7 @@ public class LeagueDatabase {
     
     private final Map<Queue, GenericObjectCache<LeagueList>> challengerCache; //Maps queue to LeagueList
     private final Map<Queue, GenericObjectCache<LeagueList>> masterCache; //Maps queue to LeagueList
-    private final Map<Long, GenericObjectCache<Map<String, List<LeagueList>>>> leaguesCache; //Maps summoner ID to a Map of LeagueList
+    private final Map<Long, GenericObjectCache<List<LeagueList>>> leaguesCache; //Maps summoner ID to a Map of LeagueList
     private final Map<Long, GenericObjectCache<Set<LeaguePosition>>> positionsCache; //Maps summoner ID to a Set of LeaguePosition
     
     public LeagueDatabase(Platform platform, RiotApi rApi) {
@@ -80,8 +80,8 @@ public class LeagueDatabase {
         }
         return data;
     }
-    private Map<String, List<LeagueList>> updateLeagueBySummoner(long id, Date now) {
-        Map<String, List<LeagueList>> data = null;
+    private List<LeagueList> updateLeagueBySummoner(long id, Date now) {
+        List<LeagueList> data = null;
         try {
             data = rApi.getLeagueBySummonerId(platform, id);
         } catch (RiotApiException ex) {
