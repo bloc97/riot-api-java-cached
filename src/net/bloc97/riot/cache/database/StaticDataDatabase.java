@@ -42,7 +42,7 @@ import net.rithms.riot.constant.Platform;
  * @author bowen
  */
 public class StaticDataDatabase {
-    private static final long LIFE = TimeUnit.HOURS.toMillis(2); //Caching Time to live
+    private static final long LIFE = TimeUnit.HOURS.toMillis(12); //Caching Time to live
     public final int version = 3;
     
     private final RiotApi rApi;
