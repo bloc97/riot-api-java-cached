@@ -22,9 +22,17 @@ The documentation for riot-api-java can be found [here.](http://taycaldwell.com/
 ## API Versions
 The current version of this library supports, and only supports the following Riot Games API versions:
 - **CHAMPION-MASTERY-V3**
+- **CHAMPION-V3**
 - **LEAGUE-V3**
+- **LOL-STATUS-V3**
+- **MASTERIES-V3**
+- **MATCH-V3** (Partial Caching)
+- **RUNES-V3**
+- **SPECTATOR-V3**
 - **STATIC-DATA-V3**
 - **SUMMONER-V3**
+
+The two Tournament methods in MATCH-V3 are not cached, but are still included for completeness.  
 
 Note: the TOURNAMENT APIs will probably never be cached, as it is unadvised to cache data that is both written and read from multiple clients without controlling the server.  
 However, you would still be able to access them through uncached functions.

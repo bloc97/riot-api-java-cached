@@ -11,6 +11,8 @@ import net.bloc97.riot.cache.database.LeagueDatabase;
 import net.bloc97.riot.cache.database.LolStatusDatabase;
 import net.bloc97.riot.cache.database.MasteriesDatabase;
 import net.bloc97.riot.cache.database.MatchDatabase;
+import net.bloc97.riot.cache.database.RunesDatabase;
+import net.bloc97.riot.cache.database.SpectatorDatabase;
 import net.bloc97.riot.cache.database.SummonerDatabase;
 import net.bloc97.riot.cache.database.StaticDataDatabase;
 import net.bloc97.riot.direct.database.MatchUncachedDatabase;
@@ -42,7 +44,8 @@ public class CachedRiotApi {
     public final LolStatusDatabase LolStatus;
     public final MasteriesDatabase Masteries;
     public final MatchDatabase Match;
-    
+    public final RunesDatabase Runes;
+    public final SpectatorDatabase Spectator;
     public final StaticDataDatabase StaticData;
     public final SummonerDatabase Summoner;
     
@@ -68,7 +71,8 @@ public class CachedRiotApi {
         this.LolStatus = new LolStatusDatabase(platform, rApi);
         this.Masteries = new MasteriesDatabase(platform, rApi);
         this.Match = new MatchDatabase(platform, rApi);
-        
+        this.Runes = new RunesDatabase(platform, rApi);
+        this.Spectator = new SpectatorDatabase(platform, rApi);
     }
     
 }
