@@ -26,13 +26,14 @@ The current version of this library supports, and only supports the following Ri
 - **LEAGUE-V3**
 - **LOL-STATUS-V3**
 - **MASTERIES-V3**
-- **MATCH-V3** (Partial Caching)*
+- **MATCH-V3** (Partial Caching)\*
 - **RUNES-V3**
 - **SPECTATOR-V3**
-- **STATIC-DATA-V3**
+- **STATIC-DATA-V3** \*\*
 - **SUMMONER-V3**
 
 *The two Tournament methods in MATCH-V3 are not cached, but are still included for completeness.  
+\*\*The language methods are not included in this API, please use riot-api-java methods instead.
 
 Note: the TOURNAMENT APIs will probably never be cached, as it is unadvised to cache data that is both written and read from multiple clients without controlling the server.  
 However, you would still be able to access them through uncached functions.
