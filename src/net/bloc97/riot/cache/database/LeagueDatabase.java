@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
-import net.rithms.riot.api.endpoints.champion_mastery.dto.ChampionMastery;
 import net.rithms.riot.api.endpoints.league.dto.LeagueList;
 import net.rithms.riot.api.endpoints.league.dto.LeaguePosition;
 import net.rithms.riot.constant.Platform;

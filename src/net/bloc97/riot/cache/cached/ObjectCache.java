@@ -6,8 +6,6 @@
 package net.bloc97.riot.cache.cached;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
 
 /**
  *
