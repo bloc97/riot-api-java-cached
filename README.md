@@ -21,16 +21,17 @@ The documentation for riot-api-java can be found [here.](http://taycaldwell.com/
 
 ## API Versions
 The current version of this library supports, and only supports the following Riot Games API versions:
-- **CHAMPION-MASTERY-V3**
-- **CHAMPION-V3**
-- **LEAGUE-V3**
-- **LOL-STATUS-V3**
-- **MASTERIES-V3**
-- **MATCH-V3** (Partial Caching)\*
-- **RUNES-V3**
-- **SPECTATOR-V3**
-- **STATIC-DATA-V3** \*\*
-- **SUMMONER-V3**
+**API** | *(Caching Life)*
+- **CHAMPION-MASTERY-V3** (20 Minutes)
+- **CHAMPION-V3** (12 Hours)
+- **LEAGUE-V3** (1 Hour)
+- **LOL-STATUS-V3** (1 Minute)
+- **MASTERIES-V3** (20 Minutes)
+- **MATCH-V3** (20 Minutes) (Partial Caching)\*
+- **RUNES-V3** (20 MInutes)
+- **SPECTATOR-V3** (30 Seconds)
+- **STATIC-DATA-V3** (12 Hours) \*\*
+- **SUMMONER-V3** (20 Minutes)
 
 *The two Tournament methods in MATCH-V3 are not cached, but are still included for completeness.  
 \*\*The language method is not fully supported, you can only use them for the default locale. For other locales, please use riot-api-java methods instead.
