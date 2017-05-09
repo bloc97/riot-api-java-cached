@@ -26,6 +26,8 @@ The current version of this library supports, and only supports the following Ri
 - **STATIC-DATA-V3**
 - **SUMMONER-V3**
 
+Note: the TOURNAMENT APIs will probably never be cached, as it is unadvised to cache data that is both written and read from multiple clients without controlling the server.
+
 ## Contributing
 All contributions are appreciated.
 If you would like to contribute to this project, please send a pull request.
