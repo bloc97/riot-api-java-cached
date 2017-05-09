@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.bloc97.riot.cache;
+package net.bloc97.riot.cache.cached;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class GenericMapCache<T> {
     
-    public final Map<Integer, GenericObjectCache<T>> map;
+    public final Map<Long, GenericObjectCache<T>> map;
     public final Class<T> type;
     
     public GenericMapCache(Class<T> type) {

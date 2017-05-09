@@ -5,11 +5,14 @@
  */
 package net.bloc97.riot.cache;
 
+import net.bloc97.riot.cache.cached.GenericMapCache;
+import net.bloc97.riot.cache.cached.GenericObjectCache;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import net.bloc97.helpers.Levenshtein;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.static_data.constant.ChampData;
@@ -24,6 +27,14 @@ import net.rithms.riot.api.endpoints.static_data.dto.Realm;
 import net.rithms.riot.api.endpoints.static_data.dto.RuneList;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
 import net.bloc97.riot.cache.static_data.dto.VersionData;
+import net.rithms.riot.api.endpoints.static_data.constant.ItemData;
+import net.rithms.riot.api.endpoints.static_data.constant.Locale;
+import net.rithms.riot.api.endpoints.static_data.constant.MasteryData;
+import net.rithms.riot.api.endpoints.static_data.constant.RuneData;
+import net.rithms.riot.api.endpoints.static_data.constant.SpellData;
+import net.rithms.riot.api.endpoints.static_data.dto.Mastery;
+import net.rithms.riot.api.endpoints.static_data.dto.Rune;
+import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
 import net.rithms.riot.constant.Platform;
 
 /**
@@ -48,6 +59,7 @@ public class StaticDataDatabase {
         entryCache = new HashMap<>();
     }
     
+    //Cache updaters
     private <T> T updateListData(Class<T> type, Date now) {
         T data = null;
         try {
@@ -79,8 +91,52 @@ public class StaticDataDatabase {
         }
         return data;
     }
+    private <T> T updateEntryData(Class<T> type, long id, Date now) {
+        T data = null;
+        try {
+            if (type.equals(Champion.class)) {
+                data = (T) rApi.getDataChampion(platform, (int)id, null, null, ChampData.ALL);
+            } else if (type.equals(Item.class)) {
+                data = (T) rApi.getDataItem(platform, (int)id, null, null, ItemData.ALL);
+            } else if (type.equals(Mastery.class)) {
+                data = (T) rApi.getDataMastery(platform, (int)id, null, null, MasteryData.ALL);
+            } else if (type.equals(Rune.class)) {
+                data = (T) rApi.getDataRune(platform, (int)id, null, null, RuneData.ALL);
+            } else if (type.equals(SummonerSpell.class)) {
+                data = (T) rApi.getDataSummonerSpell(platform, (int)id, null, null, SpellData.ALL);
+            }
+        } catch (RiotApiException ex) {
+            System.out.println(ex);
+            entryCache.get(type).map.remove(id);
+        }
+        if (data != null) {
+            entryCache.get(type).map.put(id, new GenericObjectCache(data, now));
+        }
+        return data;
+    }
     
-    public <T> T getDataList(Class<T> type) {
+    //Cache getters
+    private <T> T getDataEntry(Class<T> type, long id) {
+        Date now = new Date();
+        
+        GenericMapCache<T> mapCache = entryCache.get(type);
+        if (mapCache == null) {
+            mapCache = new GenericMapCache(type);
+            entryCache.put(type, mapCache);
+        }
+        
+        GenericObjectCache<T> cache = mapCache.map.get(id);
+        if (cache == null) {
+            return updateEntryData(type, id, now);
+        }
+        if (cache.isValid(now)) {
+            return (T) cache.getObject();
+        } else {
+            return updateEntryData(type, id, now);
+        }
+        
+    }
+    private <T> T getDataList(Class<T> type) {
         Date now = new Date();
         
         GenericObjectCache cache = listCache.get(type);
@@ -95,27 +151,67 @@ public class StaticDataDatabase {
         
     }
     
-    //Searchers (searches in cache), usually returns partial data
-    public Champion getDataChampion(int id) {
-        ChampionList list = getDataList(ChampionList.class);
-        for (Map.Entry<String, Champion> entry : list.getData().entrySet()) {
-            if (entry.getValue().getId() == id) {
-                return entry.getValue();
-            }
-        }
-        return null;
+    //List Getters (They contain partial data)
+    public ChampionList getDataChampionList() {
+        return getDataList(ChampionList.class);
     }
-    public Champion getDataChampion(String name) {
+    public ItemList getDataItemList() {
+        return getDataList(ItemList.class);
+    }
+    public MapData getDataMaps() {
+        return getDataList(MapData.class);
+    }
+    public MasteryList getDataMasteryList() {
+        return getDataList(MasteryList.class);
+    }
+    public ProfileIconData getDataProfileIcons() {
+        return getDataList(ProfileIconData.class);
+    }
+    public Realm getDataRealm() {
+        return getDataList(Realm.class);
+    }
+    public RuneList getDataRuneList() {
+        return getDataList(RuneList.class);
+    }
+    public SummonerSpellList getDataSummonerSpellList() {
+        return getDataList(SummonerSpellList.class);
+    }
+    public VersionData getDataVersions() {
+        return getDataList(VersionData.class);
+    }
+    
+    //Entry Getters (They contain full data)
+    public Champion getDataChampion(long id) {
+        return getDataEntry(Champion.class, id);
+    }
+    public Item getDataItem(long id) {
+        return getDataEntry(Item.class, id);
+    }
+    public Mastery getDataMastery(long id) {
+        return getDataEntry(Mastery.class, id);
+    }
+    public Rune getDataRune(long id) {
+        return getDataEntry(Rune.class, id);
+    }
+    public SummonerSpell getDataSummonerSpell(long id) {
+        return getDataEntry(SummonerSpell.class, id);
+    }
+    
+    //Extra functions
+    
+    //List Searchers (searches in listCache with partial data), then if possible, use ID to return a complete entry
+    public Champion searchDataChampion(String name) {
         name = name.toLowerCase();
         ChampionList list = getDataList(ChampionList.class);
         for (Map.Entry<String, Champion> championEntry : list.getData().entrySet()) {
-            if (championEntry.getValue().getName().toLowerCase().equals(name)) {
-                return championEntry.getValue();
+            Champion champion = championEntry.getValue();
+            if (champion.getName().toLowerCase().equals(name)) {
+                return getDataChampion(champion.getId());
             }
         }
         return null;
     }
-    public Champion getDataChampionClosest(String name) {
+    public Champion searchDataChampionClosest(String name) {
         name = name.toLowerCase();
         Champion champion = null;
         int distanceScore = Integer.MAX_VALUE;
@@ -128,35 +224,19 @@ public class StaticDataDatabase {
                 champion = championEntry.getValue();
             }
         }
-        return champion;
-    }
-    public Item getDataItem(int id) {
-        ItemList list = getDataItemList();
-        for (Map.Entry<String, Item> entry : list.getData().entrySet()) {
-            if (entry.getValue().getId() == id) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return getDataChampion(champion.getId());
     }
     
+    
     public String getDataLatestVersion() {
-        String version = getDataVersions().get(0);
+        VersionData versions = getDataList(VersionData.class);
+        String version = versions.getLatestVersion();
         if (version == null) {
             return "0";
         }
         return version;
     }
     
-    //Uncached complete data
-    public Champion getDataChampionFull(int id) { //Uncached
-        try {
-            return rApi.getDataChampion(platform, id, null, null, ChampData.ALL);
-        } catch (RiotApiException ex) {
-            System.out.println(ex);
-            return null;
-        }
-    }
     
     
     
