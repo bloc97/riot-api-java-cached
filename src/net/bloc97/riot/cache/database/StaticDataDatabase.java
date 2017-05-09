@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.bloc97.helpers.Levenshtein;
+import net.bloc97.riot.cache.static_data.dto.LanguageData;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.static_data.constant.ChampData;
@@ -30,6 +31,7 @@ import net.rithms.riot.api.endpoints.static_data.constant.ItemData;
 import net.rithms.riot.api.endpoints.static_data.constant.MasteryData;
 import net.rithms.riot.api.endpoints.static_data.constant.RuneData;
 import net.rithms.riot.api.endpoints.static_data.constant.SpellData;
+import net.rithms.riot.api.endpoints.static_data.dto.LanguageStrings;
 import net.rithms.riot.api.endpoints.static_data.dto.Mastery;
 import net.rithms.riot.api.endpoints.static_data.dto.Rune;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
@@ -66,6 +68,10 @@ public class StaticDataDatabase {
                 data = (T) rApi.getDataChampionList(platform);
             } else if (type.equals(ItemList.class)) {
                 data = (T) rApi.getDataItemList(platform);
+            } else if (type.equals(LanguageStrings.class)) {
+                data = (T) rApi.getDataLanguageStrings(platform);
+            } else if (type.equals(LanguageData.class)) {
+                data = (T) new LanguageData(rApi.getDataLanguages(platform));
             } else if (type.equals(MapData.class)) {
                 data = (T) rApi.getDataMaps(platform);
             } else if (type.equals(MasteryList.class)) {
@@ -156,6 +162,12 @@ public class StaticDataDatabase {
     }
     public ItemList getDataItemList() {
         return getDataList(ItemList.class);
+    }
+    public LanguageStrings getDataLanguageStrings() {
+        return getDataList(LanguageStrings.class);
+    }
+    public LanguageData getDataLanguages () {
+        return getDataList(LanguageData.class);
     }
     public MapData getDataMaps() {
         return getDataList(MapData.class);
