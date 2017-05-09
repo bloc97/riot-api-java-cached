@@ -15,6 +15,7 @@ import net.bloc97.riot.cache.database.RunesDatabase;
 import net.bloc97.riot.cache.database.SpectatorDatabase;
 import net.bloc97.riot.cache.database.SummonerDatabase;
 import net.bloc97.riot.cache.database.StaticDataDatabase;
+import net.bloc97.riot.cache.database.StatsDatabase;
 import net.bloc97.riot.direct.database.MatchUncachedDatabase;
 import net.rithms.riot.api.ApiConfig;
 import net.rithms.riot.api.RiotApi;
@@ -37,6 +38,8 @@ public class CachedRiotApi {
     private final RiotApi rApi;
     private final Platform platform;
     
+    @Deprecated
+    public final StatsDatabase Stats;
     
     public final ChampionMasteryDatabase ChampionMastery;
     public final ChampionDatabase Champion;
@@ -60,6 +63,8 @@ public class CachedRiotApi {
         
         this.rApi = new RiotApi(config);
         this.platform = platform;
+        
+        this.Stats = new StatsDatabase(platform, rApi);
         
         this.Uncached = new Uncached(platform, rApi);
         
