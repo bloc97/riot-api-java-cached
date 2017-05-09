@@ -8,7 +8,7 @@ This product is not endorsed, certified or otherwise approved in any way by Riot
 
 ## Requirements
 
-**riot-api-java-cached** requires Java 8 and the following libraries:
+**riot-api-java-cached** requires Java 8 and the following libraries with their respective requirements:
 - [riot-api-java](https://github.com/taycaldwell/riot-api-java)
 
 ## Usage
@@ -16,10 +16,8 @@ This product is not endorsed, certified or otherwise approved in any way by Riot
 This library can be used strictly according to the [Riot API Documentation](https://developer.riotgames.com/api/methods) 
 
 ## Documentation
-
-
-
-The documentation for this library can be found [here.](http://taycaldwell.com/riot-api-java/doc/)
+There is not yet an documentation, function names are what they describe.
+The documentation for riot-api-java can be found [here.](http://taycaldwell.com/riot-api-java/doc/)
 
 ## API Versions
 The current version of this library supports, and only supports the following Riot Games API versions:
