@@ -42,39 +42,9 @@ public class CachedRiotApi {
         }
     }
     
-    public class Limiter {
-        private final int MAXSECONDCOUNT = 100;
-        private int secondCount;
-        private Limiter() {
-            secondCount = 0;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    secondCount--;
-                    if (secondCount < 0) {
-                        secondCount = 0;
-                    }
-                }
-            }, 1000, 1000);
-        }
-        public void enforceLimit() {
-            secondCount++;
-            while (secondCount > MAXSECONDCOUNT) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    System.out.println(ex);
-                }
-            }
-        }
-        
-    }
-    
     private final RiotApi rApi;
     private final Platform platform;
     
-    private final Limiter limiter;
     
     @Deprecated
     public final StatsDatabase Stats;
@@ -101,7 +71,6 @@ public class CachedRiotApi {
         
         this.rApi = new RiotApi(config);
         this.platform = platform;
-        this.limiter = new Limiter();
         
         this.Stats = new StatsDatabase(platform, rApi);
         
@@ -114,7 +83,7 @@ public class CachedRiotApi {
         this.League = new LeagueDatabase(platform, rApi);
         this.LolStatus = new LolStatusDatabase(platform, rApi);
         this.Masteries = new MasteriesDatabase(platform, rApi);
-        this.Match = new MatchDatabase(platform, rApi, limiter);
+        this.Match = new MatchDatabase(platform, rApi);
         this.Runes = new RunesDatabase(platform, rApi);
         this.Spectator = new SpectatorDatabase(platform, rApi);
     }
@@ -129,6 +98,21 @@ public class CachedRiotApi {
             }
         }
         return false;
+    }
+    
+    public final void purgeAll() {
+        Stats.purge();
+        
+        ChampionMastery.purge();
+        Champion.purge();
+        League.purge();
+        LolStatus.purge();
+        Masteries.purge();
+        Match.purge();
+        Runes.purge();
+        Spectator.purge();
+        StaticData.purge();
+        Summoner.purge();
     }
     
 }
