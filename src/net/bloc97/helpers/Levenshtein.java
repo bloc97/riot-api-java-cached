@@ -38,4 +38,12 @@ public class Levenshtein {
         return distance(longString, shortString);
         //return Integer.MAX_VALUE;
     }
+    
+    public static String toLowerCase(String s) {
+        if (s == null) {
+            return "";
+        } else {
+            return s.toLowerCase();
+        }
+    }
 }
