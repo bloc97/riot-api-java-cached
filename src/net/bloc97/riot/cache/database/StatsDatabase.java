@@ -26,7 +26,7 @@ import net.rithms.riot.constant.Region;
  * @author bowen
  */
 @Deprecated
-public class StatsDatabase {
+public class StatsDatabase implements CachedDatabase {
     private static final long LIFE = TimeUnit.MINUTES.toMillis(20); //Caching Time to live
     public final int version = 1;
     
@@ -107,6 +107,12 @@ public class StatsDatabase {
         } else {
             return updatePlayerStatsRanked(id, now);
         }
+    }
+
+    @Override
+    public void purge() {
+        rankedCache.clear();
+        summariesCache.clear();
     }
     
     

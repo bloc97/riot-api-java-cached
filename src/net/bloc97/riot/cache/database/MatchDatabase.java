@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.bloc97.riot.cache.CachedRiotApi;
-import net.bloc97.riot.cache.CachedRiotApi.Limiter;
 import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
@@ -29,23 +28,21 @@ import net.rithms.riot.constant.Platform;
  *
  * @author bowen
  */
-public class MatchDatabase {
+public class MatchDatabase implements CachedDatabase {
     private static final long LIFE = TimeUnit.MINUTES.toMillis(20); //Caching Time to live
     public final int version = 3;
     
     private final RiotApi rApi;
     private final Platform platform;
-    private final Limiter limiter;
     
     private final Map<Long, GenericObjectCache<Match>> matchesCache; //Maps match ID to Match
     private final Map<Long, GenericObjectCache<MatchTimeline>> timelinesCache; //Maps match ID to Match Timeline
     private final Map<Long, GenericObjectCache<MatchList>> matchListsRankedCache; //Maps account ID to MatchList
     private final Map<Long, GenericObjectCache<MatchList>> matchListsRecentCache; //Maps account ID to Recent MatchList
     
-    public MatchDatabase(Platform platform, RiotApi rApi, Limiter limiter) {
+    public MatchDatabase(Platform platform, RiotApi rApi) {
         this.rApi = rApi;
         this.platform = platform;
-        this.limiter = limiter;
         
         matchesCache = new HashMap<>();
         timelinesCache = new HashMap<>();
@@ -55,7 +52,6 @@ public class MatchDatabase {
     
     //Updaters, calls RiotApi for cache updates
     private Match updateMatch(long id, Date now) {
-        limiter.enforceLimit();
         
         Match data = null;
         try {
@@ -73,7 +69,6 @@ public class MatchDatabase {
         return data;
     }
     private MatchList updateRankedMatchListByAccountId(long id, Date now) {
-        limiter.enforceLimit();
         
         MatchList data = null;
         try {
@@ -91,7 +86,6 @@ public class MatchDatabase {
         return data;
     }
     private MatchList updateRecentMatchListByAccountId(long id, Date now) {
-        limiter.enforceLimit();
         
         MatchList data = null;
         try {
@@ -109,7 +103,6 @@ public class MatchDatabase {
         return data;
     }
     private MatchTimeline updateMatchTimeline(long id, Date now) {
-        limiter.enforceLimit();
         
         MatchTimeline data = null;
         try {
@@ -192,6 +185,19 @@ public class MatchDatabase {
             }
         }
         return fullList;
+    }
+    
+    public int tryGetParticipantId(Match match, long summonerId) {
+        return 0;
+        //Use various data to try and find participan id when they are hidden
+    }
+
+    @Override
+    public void purge() {
+        matchListsRankedCache.clear();
+        matchListsRecentCache.clear();
+        matchesCache.clear();
+        timelinesCache.clear();
     }
     
 }

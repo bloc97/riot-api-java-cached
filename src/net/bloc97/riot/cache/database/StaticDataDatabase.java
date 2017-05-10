@@ -46,7 +46,7 @@ import net.rithms.riot.constant.Platform;
  *
  * @author bowen
  */
-public class StaticDataDatabase {
+public class StaticDataDatabase implements CachedDatabase {
     private static final long LIFE = TimeUnit.HOURS.toMillis(12); //Caching Time to live
     public final int version = 3;
     
@@ -424,6 +424,12 @@ public class StaticDataDatabase {
             return "0";
         }
         return version;
+    }
+
+    @Override
+    public void purge() {
+        entryCache.clear();
+        listCache.clear();
     }
     
     

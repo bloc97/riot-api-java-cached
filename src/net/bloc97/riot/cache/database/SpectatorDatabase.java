@@ -23,7 +23,7 @@ import net.rithms.riot.constant.Platform;
  *
  * @author bowen
  */
-public class SpectatorDatabase {
+public class SpectatorDatabase implements CachedDatabase {
     private static final long LIFE = TimeUnit.SECONDS.toMillis(30); //Caching Time to live
     private long featuredLife = TimeUnit.MINUTES.toMillis(10); //Caching Time to live, modified by suggested ttl from Riot API
     public final int version = 3;
@@ -101,6 +101,12 @@ public class SpectatorDatabase {
         } else {
             return updateFeaturedGames(now);
         }
+    }
+
+    @Override
+    public void purge() {
+        currentGameCache.clear();
+        featuredCache = null;
     }
     
     

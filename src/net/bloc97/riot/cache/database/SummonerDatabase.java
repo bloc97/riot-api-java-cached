@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.bloc97.riot.cache.CachedRiotApi.Limiter;
 import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
@@ -24,7 +23,7 @@ import net.rithms.riot.constant.Platform;
  *
  * @author bowen
  */
-public class SummonerDatabase {
+public class SummonerDatabase implements CachedDatabase {
     private static final long LIFE = TimeUnit.MINUTES.toMillis(20); //Caching Time to live
     public final int version = 3;
     
@@ -158,6 +157,11 @@ public class SummonerDatabase {
     //Extra helper functions
     public boolean summonerNameExists(String name) {
         return getSummonerByName(name) != null;
+    }
+
+    @Override
+    public void purge() {
+        summonerCache.clear();
     }
     
     

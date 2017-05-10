@@ -21,7 +21,7 @@ import net.rithms.riot.constant.Platform;
  *
  * @author bowen
  */
-public class MasteriesDatabase {
+public class MasteriesDatabase implements CachedDatabase {
     private static final long LIFE = TimeUnit.MINUTES.toMillis(20); //Caching Time to live
     public final int version = 3;
     
@@ -67,6 +67,11 @@ public class MasteriesDatabase {
         } else {
             return updateMasteriesBySummoner(id, now);
         }
+    }
+
+    @Override
+    public void purge() {
+        masteriesCache.clear();
     }
     
     

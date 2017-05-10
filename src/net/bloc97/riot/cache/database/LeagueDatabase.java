@@ -25,8 +25,8 @@ import net.rithms.riot.constant.Platform;
  */
 
 
-public class LeagueDatabase {
-    
+public class LeagueDatabase implements CachedDatabase {
+
     public static enum Queue {
         RANKED_SOLO_5x5, RANKED_FLEX_SR, RANKED_FLEX_TT;
     }
@@ -162,6 +162,14 @@ public class LeagueDatabase {
         } else {
             return updateLeaguePositionsBySummoner(id, now);
         }
+    }
+    
+    @Override
+    public void purge() {
+        challengerCache.clear();
+        masterCache.clear();
+        leaguesCache.clear();
+        positionsCache.clear();
     }
     
 }
