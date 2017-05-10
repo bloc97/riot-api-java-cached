@@ -5,10 +5,15 @@
  */
 package net.bloc97.riot.cache.database;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import net.bloc97.riot.cache.cached.GenericMapCache;
 import net.bloc97.riot.cache.cached.GenericObjectCache;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.bloc97.helpers.Levenshtein;
@@ -210,32 +215,175 @@ public class StaticDataDatabase {
     
     //Extra functions
     
+    //List Sorters
+    
+    //Sort by closest to name, returns the partial data list
+    public List<Champion> getDataChampionListByClosest(String name) {
+        final String nameL = name.toLowerCase();
+        List<Champion> list = new ArrayList<>(getDataChampionList().getData().values());
+        
+        Collections.sort(list, (Champion o1, Champion o2) -> Levenshtein.substringDistance(o1.getKey().toLowerCase(), nameL) - Levenshtein.substringDistance(o2.getKey().toLowerCase(), nameL));
+        return list;
+    }
+    public List<Item> getDataItemListByClosest(String name) {
+        final String nameL = name.toLowerCase();
+        List<Item> list = new ArrayList<>(getDataItemList().getData().values());
+        
+        Collections.sort(list, (Item o1, Item o2) -> Levenshtein.substringDistance(o1.getName().toLowerCase(), nameL) - Levenshtein.substringDistance(o2.getName().toLowerCase(), nameL));
+        return list;
+    }
+    public List<Mastery> getDataMasteryListByClosest(String name) {
+        final String nameL = name.toLowerCase();
+        List<Mastery> list = new ArrayList<>(getDataMasteryList().getData().values());
+        
+        Collections.sort(list, (Mastery o1, Mastery o2) -> Levenshtein.substringDistance(o1.getName().toLowerCase(), nameL) - Levenshtein.substringDistance(o2.getName().toLowerCase(), nameL));
+        return list;
+    }
+    public List<Rune> getDataRuneListByClosest(String name) {
+        final String nameL = name.toLowerCase();
+        List<Rune> list = new ArrayList<>(getDataRuneList().getData().values());
+        
+        Collections.sort(list, (Rune o1, Rune o2) -> Levenshtein.substringDistance(o1.getName().toLowerCase(), nameL) - Levenshtein.substringDistance(o2.getName().toLowerCase(), nameL));
+        return list;
+    }
+    public List<SummonerSpell> getDataSummonerSpellListByClosest(String name) {
+        final String nameL = name.toLowerCase();
+        List<SummonerSpell> list = new ArrayList<>(getDataSummonerSpellList().getData().values());
+        
+        Collections.sort(list, (SummonerSpell o1, SummonerSpell o2) -> Levenshtein.substringDistance(o1.getName().toLowerCase(), nameL) - Levenshtein.substringDistance(o2.getName().toLowerCase(), nameL));
+        return list;
+    }
+    
     //List Searchers (searches in listCache with partial data), then if possible, use ID to return a complete entry
     public Champion searchDataChampion(String name) {
         name = name.toLowerCase();
-        ChampionList list = getDataList(ChampionList.class);
-        for (Map.Entry<String, Champion> championEntry : list.getData().entrySet()) {
-            Champion champion = championEntry.getValue();
-            if (champion.getName().toLowerCase().equals(name)) {
-                return getDataChampion(champion.getId());
+        ChampionList list = getDataChampionList();
+        for (Map.Entry<String, Champion> entry : list.getData().entrySet()) {
+            Champion dto = entry.getValue();
+            if (dto.getName().toLowerCase().equals(name)) {
+                return getDataChampion(dto.getId());
             }
         }
         return null;
     }
     public Champion searchDataChampionClosest(String name) {
         name = name.toLowerCase();
-        Champion champion = null;
+        Champion dto = null;
         int distanceScore = Integer.MAX_VALUE;
-        ChampionList list = getDataList(ChampionList.class);
-        for (Map.Entry<String, Champion> championEntry : list.getData().entrySet()) {
-            String championName = championEntry.getValue().getKey().toLowerCase();
-            int newDistanceScore = Levenshtein.substringDistance(championName, name);
+        ChampionList list = getDataChampionList();
+        for (Map.Entry<String, Champion> entry : list.getData().entrySet()) {
+            String dtoName = entry.getValue().getKey().toLowerCase();
+            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
             if (newDistanceScore < distanceScore) {
                 distanceScore = newDistanceScore;
-                champion = championEntry.getValue();
+                dto = entry.getValue();
             }
         }
-        return getDataChampion(champion.getId());
+        return getDataChampion(dto.getId());
+    }
+    public Item searchDataItem(String name) {
+        name = name.toLowerCase();
+        ItemList list = getDataItemList();
+        for (Map.Entry<String, Item> entry : list.getData().entrySet()) {
+            Item dto = entry.getValue();
+            if (dto.getName().toLowerCase().equals(name)) {
+                return getDataItem(dto.getId());
+            }
+        }
+        return null;
+    }
+    public Item searchDataItemClosest(String name) {
+        name = name.toLowerCase();
+        Item dto = null;
+        int distanceScore = Integer.MAX_VALUE;
+        ItemList list = getDataItemList();
+        for (Map.Entry<String, Item> entry : list.getData().entrySet()) {
+            String dtoName = entry.getValue().getName().toLowerCase();
+            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            if (newDistanceScore < distanceScore) {
+                distanceScore = newDistanceScore;
+                dto = entry.getValue();
+            }
+        }
+        return getDataItem(dto.getId());
+    }
+    public Mastery searchDataMastery(String name) {
+        name = name.toLowerCase();
+        MasteryList list = getDataMasteryList();
+        for (Map.Entry<String, Mastery> entry : list.getData().entrySet()) {
+            Mastery dto = entry.getValue();
+            if (dto.getName().toLowerCase().equals(name)) {
+                return getDataMastery(dto.getId());
+            }
+        }
+        return null;
+    }
+    public Mastery searchDataMasteryClosest(String name) {
+        name = name.toLowerCase();
+        Mastery dto = null;
+        int distanceScore = Integer.MAX_VALUE;
+        MasteryList list = getDataMasteryList();
+        for (Map.Entry<String, Mastery> entry : list.getData().entrySet()) {
+            String dtoName = entry.getValue().getName().toLowerCase();
+            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            if (newDistanceScore < distanceScore) {
+                distanceScore = newDistanceScore;
+                dto = entry.getValue();
+            }
+        }
+        return getDataMastery(dto.getId());
+    }
+    public Rune searchDataRune(String name) {
+        name = name.toLowerCase();
+        RuneList list = getDataRuneList();
+        for (Map.Entry<String, Rune> entry : list.getData().entrySet()) {
+            Rune dto = entry.getValue();
+            if (dto.getName().toLowerCase().equals(name)) {
+                return getDataRune(dto.getId());
+            }
+        }
+        return null;
+    }
+    public Rune searchDataRuneClosest(String name) {
+        name = name.toLowerCase();
+        Rune dto = null;
+        int distanceScore = Integer.MAX_VALUE;
+        RuneList list = getDataRuneList();
+        for (Map.Entry<String, Rune> entry : list.getData().entrySet()) {
+            String dtoName = entry.getValue().getName().toLowerCase();
+            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            if (newDistanceScore < distanceScore) {
+                distanceScore = newDistanceScore;
+                dto = entry.getValue();
+            }
+        }
+        return getDataRune(dto.getId());
+    }
+    public SummonerSpell searchDataSummonerSpell(String name) {
+        name = name.toLowerCase();
+        SummonerSpellList list = getDataSummonerSpellList();
+        for (Map.Entry<String, SummonerSpell> entry : list.getData().entrySet()) {
+            SummonerSpell dto = entry.getValue();
+            if (dto.getName().toLowerCase().equals(name)) {
+                return getDataSummonerSpell(dto.getId());
+            }
+        }
+        return null;
+    }
+    public SummonerSpell searchDataSummonerSpellClosest(String name) {
+        name = name.toLowerCase();
+        SummonerSpell dto = null;
+        int distanceScore = Integer.MAX_VALUE;
+        SummonerSpellList list = getDataSummonerSpellList();
+        for (Map.Entry<String, SummonerSpell> entry : list.getData().entrySet()) {
+            String dtoName = entry.getValue().getName().toLowerCase();
+            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            if (newDistanceScore < distanceScore) {
+                distanceScore = newDistanceScore;
+                dto = entry.getValue();
+            }
+        }
+        return getDataSummonerSpell(dto.getId());
     }
     
     

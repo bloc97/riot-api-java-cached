@@ -29,7 +29,10 @@ public class Levenshtein {
         if (longString.startsWith(shortString)) {
             final int longLength = longString.length();
             final int shortLength = shortString.length();
-            return (int)Math.sqrt(longLength - shortLength);
+            return (int)Math.log10(longLength - shortLength)+1;
+            //return (int)Math.pow(longLength - shortLength, 1/4f);
+            //return (int)Math.sqrt(longLength - shortLength);
+            //return 0;
             //return (longString.length() - shortString.length())/4;
         }
         return distance(longString, shortString);

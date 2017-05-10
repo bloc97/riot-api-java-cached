@@ -5,6 +5,8 @@
  */
 package net.bloc97.riot.cache.database;
 
+import java.util.Collections;
+import java.util.Comparator;
 import net.bloc97.riot.cache.cached.GenericObjectCache;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,7 +83,9 @@ public class ChampionMasteryDatabase {
             return updateChampionMasteriesBySummoner(id, now);
         }
     }
-    public ChampionMastery getChampionMasteriesBySummonerByChampion(long id, int championId) {
+    
+    
+    public ChampionMastery getChampionMasteryBySummonerByChampion(long id, int championId) {
         List<ChampionMastery> championMasteries = getChampionMasteriesBySummoner(id);
         
         for (ChampionMastery cm : championMasteries) {
@@ -91,7 +95,7 @@ public class ChampionMasteryDatabase {
         }
         return null;
     }
-    public int getChampionMasteryScoresBySummoner(long id) {
+    public int getChampionMasteryScoreBySummoner(long id) {
         Date now = new Date();
         
         GenericObjectCache<Integer> cache = scoresCache.get(id);
@@ -103,6 +107,40 @@ public class ChampionMasteryDatabase {
         } else {
             return updateChampionMasteryScoresBySummoner(id, now);
         }
+    }
+    
+    //Extra functions
+    public enum CompareMethod {
+        ID, LEVEL, POINTS, LASTPLAYED, TOKENSEARNED;
+    }
+    
+    public void sortChampionMasteries(List<ChampionMastery> list, CompareMethod method, boolean isAscending) {
+        Comparator<ChampionMastery> comparator = null;
+        
+        switch (method) {
+            case ID:
+                comparator = (ChampionMastery o1, ChampionMastery o2) -> o1.getChampionId() - o2.getChampionId();
+                break;
+            case LEVEL:
+                comparator = (ChampionMastery o1, ChampionMastery o2) -> o1.getChampionLevel() - o2.getChampionLevel();
+                break;
+            case POINTS:
+                //Assuming it is already sorted by points
+                //comparator = (ChampionMastery o1, ChampionMastery o2) -> (int)(o1.getChampionPoints( )- o2.getChampionPoints());
+                break;
+            case LASTPLAYED:
+                comparator = (ChampionMastery o1, ChampionMastery o2) -> (int)(o1.getLastPlayTime() - o2.getLastPlayTime());
+                break;
+            case TOKENSEARNED:
+                comparator = (ChampionMastery o1, ChampionMastery o2) -> o1.getTokensEarned() - o2.getTokensEarned();
+                break;
+            default:
+        }
+        
+        if (comparator != null) {
+            Collections.sort(list, comparator);
+        }
+        if (!isAscending) Collections.reverse(list);
     }
     
 }

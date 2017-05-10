@@ -4,17 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/CachedRiotApi.java</file>
-            <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/MasteriesDatabase.java</file>
+            <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/StatsDatabase.java</file>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/LolStatusDatabase.java</file>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/StaticDataDatabase.java</file>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/ChampionDatabase.java</file>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/ChampionMasteryDatabase.java</file>
-            <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/SpectatorDatabase.java</file>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/LeagueDatabase.java</file>
             <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/MatchDatabase.java</file>
-            <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/RunesDatabase.java</file>
-            <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/static_data/dto/VersionData.java</file>
-            <file>file:/C:/Users/bowen/Documents/GitHub/RiotJavaCachedApi/src/net/bloc97/riot/cache/database/SummonerDatabase.java</file>
         </group>
     </open-files>
 </project-private>

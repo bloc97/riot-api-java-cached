@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.champion.dto.Champion;
@@ -69,14 +70,8 @@ public class ChampionDatabase {
             return new LinkedList();
         }
         List<Champion> champions = championsList.getChampions();
-        
-        LinkedList<Champion> filteredChampions = new LinkedList<>();
-        for (Champion champion : champions) {
-            if (champion.isFreeToPlay() == freeToPlay) {
-                filteredChampions.add(champion);
-            }
-        }
-        return filteredChampions;
+        filterFreeToPlay(champions, freeToPlay);
+        return champions;
     }
     public Champion getChampion(int id) {
         ChampionList championsList = getChampions();
@@ -91,6 +86,24 @@ public class ChampionDatabase {
             }
         }
         return null;
+    }
+    
+    //Extra functions
+    
+    public void filterFreeToPlay(List<Champion> list, boolean freeToPlay) {
+        list.removeIf((Champion t) -> t.isFreeToPlay() == freeToPlay);
+    }
+    public void filterActive(List<Champion> list, boolean isActive) {
+        list.removeIf((Champion t) -> t.isActive() == isActive);
+    }
+    public void filterBotEnabled(List<Champion> list, boolean isBotEnabled) {
+        list.removeIf((Champion t) -> t.isBotEnabled() == isBotEnabled);
+    }
+    public void filterBotMmEnabled(List<Champion> list, boolean isBotMmEnabled) {
+        list.removeIf((Champion t) -> t.isBotMmEnabled() == isBotMmEnabled);
+    }
+    public void filterRankedPlayEnabled(List<Champion> list, boolean isRankedPlayEnabled) {
+        list.removeIf((Champion t) -> t.isRankedPlayEnabled() == isRankedPlayEnabled);
     }
     
 }
