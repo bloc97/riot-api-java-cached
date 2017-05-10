@@ -29,8 +29,8 @@ There is not yet an documentation, function names are what they describe.
 The documentation for riot-api-java can be found [here.](http://taycaldwell.com/riot-api-java/doc/)
 
 ## API Versions
-The current version of this library supports, and only supports the following Riot Games API versions:
-**API** | *(Caching Life)*
+The current version of this library supports, and only supports the following Riot Games API versions:  
+ **API** | *(Caching Life)*  
 - **CHAMPION-MASTERY-V3** (20 Minutes)
 - **CHAMPION-V3** (12 Hours)
 - **LEAGUE-V3** (1 Hour)
