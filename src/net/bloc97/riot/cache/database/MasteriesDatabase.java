@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.masteries.dto.MasteryPages;
@@ -42,6 +43,9 @@ public class MasteriesDatabase {
         try {
             data = rApi.getMasteriesBySummoner(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateMasteriesBySummoner(id, now);
+            }
             System.out.println(ex);
             masteriesCache.remove(id);
         }

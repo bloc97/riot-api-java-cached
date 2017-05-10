@@ -10,9 +10,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.runes.dto.RunePages;
+import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
 
 /**
@@ -41,6 +43,9 @@ public class RunesDatabase {
         try {
             data = rApi.getRunesBySummoner(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateRunesBySummoner(id, now);
+            }
             System.out.println(ex);
             runesCache.remove(id);
         }

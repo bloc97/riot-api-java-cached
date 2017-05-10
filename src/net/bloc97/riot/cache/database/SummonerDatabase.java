@@ -10,9 +10,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.bloc97.riot.cache.CachedRiotApi.Limiter;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
+import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
 
 /**
@@ -37,23 +42,32 @@ public class SummonerDatabase {
     
     //Updaters, calls RiotApi for cache updates
     private Summoner updateSummoner(long id, Date now) {
+        
         Summoner data = null;
         try {
             data = rApi.getSummoner(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateSummoner(id, now);
+            }
             System.out.println(ex);
             summonerCache.remove(id);
         }
+        
         if (data != null) {
             summonerCache.put(id, new GenericObjectCache(data, now, LIFE));
         }
         return data;
     }
     private Summoner updateSummonerByName(String name, Date now) {
+        
         Summoner data = null;
         try {
             data = rApi.getSummonerByName(platform, name);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateSummonerByName(name, now);
+            }
             System.out.println(ex);
         }
         if (data != null) {
@@ -62,10 +76,14 @@ public class SummonerDatabase {
         return data;
     }
     private Summoner updateSummonerByAccount(long accountId, Date now) {
+        
         Summoner data = null;
         try {
             data = rApi.getSummonerByAccount(platform, accountId);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateSummonerByAccount(accountId, now);
+            }
             System.out.println(ex);
         }
         if (data != null) {

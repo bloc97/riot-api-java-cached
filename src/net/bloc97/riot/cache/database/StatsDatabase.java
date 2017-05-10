@@ -10,12 +10,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.masteries.dto.MasteryPages;
 import net.rithms.riot.api.endpoints.stats.dto.PlayerStatsSummary;
 import net.rithms.riot.api.endpoints.stats.dto.PlayerStatsSummaryList;
 import net.rithms.riot.api.endpoints.stats.dto.RankedStats;
+import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
 import net.rithms.riot.constant.Region;
 
@@ -49,6 +51,9 @@ public class StatsDatabase {
         try {
             data = rApi.getPlayerStatsSummary(region, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updatePlayerStatsSummary(id, now);
+            }
             System.out.println(ex);
             summariesCache.remove(id);
         }
@@ -63,6 +68,9 @@ public class StatsDatabase {
         try {
             data = rApi.getRankedStats(region, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updatePlayerStatsRanked(id, now);
+            }
             System.out.println(ex);
             rankedCache.remove(id);
         }

@@ -8,14 +8,21 @@ package net.bloc97.riot.cache.database;
 import net.bloc97.riot.cache.cached.GenericObjectCache;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import net.bloc97.riot.cache.CachedRiotApi;
+import net.bloc97.riot.cache.CachedRiotApi.Limiter;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.match.dto.Match;
 import net.rithms.riot.api.endpoints.match.dto.MatchList;
+import net.rithms.riot.api.endpoints.match.dto.MatchReference;
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline;
 import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
+import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
 
 /**
@@ -28,15 +35,17 @@ public class MatchDatabase {
     
     private final RiotApi rApi;
     private final Platform platform;
+    private final Limiter limiter;
     
     private final Map<Long, GenericObjectCache<Match>> matchesCache; //Maps match ID to Match
     private final Map<Long, GenericObjectCache<MatchTimeline>> timelinesCache; //Maps match ID to Match Timeline
     private final Map<Long, GenericObjectCache<MatchList>> matchListsRankedCache; //Maps account ID to MatchList
     private final Map<Long, GenericObjectCache<MatchList>> matchListsRecentCache; //Maps account ID to Recent MatchList
     
-    public MatchDatabase(Platform platform, RiotApi rApi) {
+    public MatchDatabase(Platform platform, RiotApi rApi, Limiter limiter) {
         this.rApi = rApi;
         this.platform = platform;
+        this.limiter = limiter;
         
         matchesCache = new HashMap<>();
         timelinesCache = new HashMap<>();
@@ -46,10 +55,15 @@ public class MatchDatabase {
     
     //Updaters, calls RiotApi for cache updates
     private Match updateMatch(long id, Date now) {
+        limiter.enforceLimit();
+        
         Match data = null;
         try {
             data = rApi.getMatch(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateMatch(id, now);
+            }
             System.out.println(ex);
             matchesCache.remove(id);
         }
@@ -59,10 +73,15 @@ public class MatchDatabase {
         return data;
     }
     private MatchList updateRankedMatchListByAccountId(long id, Date now) {
+        limiter.enforceLimit();
+        
         MatchList data = null;
         try {
             data = rApi.getMatchListByAccountId(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateRankedMatchListByAccountId(id, now);
+            }
             System.out.println(ex);
             matchListsRankedCache.remove(id);
         }
@@ -72,10 +91,15 @@ public class MatchDatabase {
         return data;
     }
     private MatchList updateRecentMatchListByAccountId(long id, Date now) {
+        limiter.enforceLimit();
+        
         MatchList data = null;
         try {
             data = rApi.getRecentMatchListByAccountId(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateRecentMatchListByAccountId(id, now);
+            }
             System.out.println(ex);
             matchListsRecentCache.remove(id);
         }
@@ -85,10 +109,15 @@ public class MatchDatabase {
         return data;
     }
     private MatchTimeline updateMatchTimeline(long id, Date now) {
+        limiter.enforceLimit();
+        
         MatchTimeline data = null;
         try {
             data = rApi.getTimelineByMatchId(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateMatchTimeline(id, now);
+            }
             System.out.println(ex);
             timelinesCache.remove(id);
         }
@@ -152,6 +181,17 @@ public class MatchDatabase {
         }
     }
     
-    
+    //Extra functions
+    public List<Match> getMatches(MatchList matchList) {
+        LinkedList<Match> fullList = new LinkedList<>();
+        
+        for (MatchReference mr : matchList.getMatches()) {
+            Match m = getMatch(mr.getGameId());
+            if (m != null) {
+                fullList.add(m);
+            }
+        }
+        return fullList;
+    }
     
 }

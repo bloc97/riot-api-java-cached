@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.champion.dto.Champion;
@@ -41,6 +42,9 @@ public class ChampionDatabase {
         try {
             data = rApi.getChampions(platform);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateChampions(now);
+            }
             System.out.println(ex);
             championsCache = null;
         }

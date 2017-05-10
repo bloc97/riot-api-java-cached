@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.league.dto.LeagueList;
@@ -63,6 +64,9 @@ public class LeagueDatabase {
                 data = rApi.getMasterLeagueByQueue(platform, queue.toString());
             }
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateLeague(rank, queue, now);
+            }
             System.out.println(ex);
             if (rank == Rank.CHALLENGER) {
                 challengerCache.remove(queue);
@@ -84,6 +88,9 @@ public class LeagueDatabase {
         try {
             data = rApi.getLeagueBySummonerId(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateLeagueBySummoner(id, now);
+            }
             System.out.println(ex);
             leaguesCache.remove(id);
         }
@@ -97,6 +104,9 @@ public class LeagueDatabase {
         try {
             data = rApi.getLeaguePositionsBySummonerId(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateLeaguePositionsBySummoner(id, now);
+            }
             System.out.println(ex);
             positionsCache.remove(id);
         }

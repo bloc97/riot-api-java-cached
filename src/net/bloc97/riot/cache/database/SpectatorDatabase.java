@@ -10,11 +10,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.runes.dto.RunePages;
 import net.rithms.riot.api.endpoints.spectator.dto.CurrentGameInfo;
 import net.rithms.riot.api.endpoints.spectator.dto.FeaturedGames;
+import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
 
 /**
@@ -45,6 +47,9 @@ public class SpectatorDatabase {
         try {
             data = rApi.getActiveGameBySummoner(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateActiveGameBySummoner(id, now);
+            }
             System.out.println(ex);
             currentGameCache.remove(id);
         }
@@ -59,6 +64,9 @@ public class SpectatorDatabase {
             data = rApi.getFeaturedGames(platform);
             featuredLife = data.getClientRefreshInterval();
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateFeaturedGames(now);
+            }
             System.out.println(ex);
             featuredCache = null;
         }

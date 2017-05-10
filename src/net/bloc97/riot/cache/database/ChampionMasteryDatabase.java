@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.api.endpoints.champion_mastery.dto.ChampionMastery;
@@ -46,6 +47,9 @@ public class ChampionMasteryDatabase {
         try {
             data = rApi.getChampionMasteriesBySummoner(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateChampionMasteriesBySummoner(id, now);
+            }
             System.out.println(ex);
             championMasteriesCache.remove(id);
         }
@@ -59,6 +63,9 @@ public class ChampionMasteryDatabase {
         try {
             data = rApi.getChampionMasteryScoresBySummoner(platform, id);
         } catch (RiotApiException ex) {
+            if (isRateLimited(ex)) {
+                return updateChampionMasteryScoresBySummoner(id, now);
+            }
             System.out.println(ex);
             championMasteriesCache.remove(id);
         }

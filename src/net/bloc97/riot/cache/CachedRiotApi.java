@@ -5,6 +5,10 @@
  */
 package net.bloc97.riot.cache;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.bloc97.riot.cache.database.ChampionDatabase;
 import net.bloc97.riot.cache.database.ChampionMasteryDatabase;
 import net.bloc97.riot.cache.database.LeagueDatabase;
@@ -19,6 +23,8 @@ import net.bloc97.riot.cache.database.StatsDatabase;
 import net.bloc97.riot.direct.database.MatchUncachedDatabase;
 import net.rithms.riot.api.ApiConfig;
 import net.rithms.riot.api.RiotApi;
+import net.rithms.riot.api.RiotApiException;
+import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
 
 /**
@@ -35,8 +41,40 @@ public class CachedRiotApi {
             this.Match = new MatchUncachedDatabase(platform, rApi);
         }
     }
+    
+    public class Limiter {
+        private final int MAXSECONDCOUNT = 100;
+        private int secondCount;
+        private Limiter() {
+            secondCount = 0;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    secondCount--;
+                    if (secondCount < 0) {
+                        secondCount = 0;
+                    }
+                }
+            }, 1000, 1000);
+        }
+        public void enforceLimit() {
+            secondCount++;
+            while (secondCount > MAXSECONDCOUNT) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    System.out.println(ex);
+                }
+            }
+        }
+        
+    }
+    
     private final RiotApi rApi;
     private final Platform platform;
+    
+    private final Limiter limiter;
     
     @Deprecated
     public final StatsDatabase Stats;
@@ -63,6 +101,7 @@ public class CachedRiotApi {
         
         this.rApi = new RiotApi(config);
         this.platform = platform;
+        this.limiter = new Limiter();
         
         this.Stats = new StatsDatabase(platform, rApi);
         
@@ -75,9 +114,21 @@ public class CachedRiotApi {
         this.League = new LeagueDatabase(platform, rApi);
         this.LolStatus = new LolStatusDatabase(platform, rApi);
         this.Masteries = new MasteriesDatabase(platform, rApi);
-        this.Match = new MatchDatabase(platform, rApi);
+        this.Match = new MatchDatabase(platform, rApi, limiter);
         this.Runes = new RunesDatabase(platform, rApi);
         this.Spectator = new SpectatorDatabase(platform, rApi);
+    }
+    
+    public static boolean isRateLimited(RiotApiException ex) {
+        if (ex instanceof RateLimitException) {
+            try {
+                Thread.sleep(((RateLimitException) ex).getRetryAfter()+100);
+                return true;
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
+        }
+        return false;
     }
     
 }
