@@ -10,6 +10,8 @@ This API wraps [RIOT-API-JAVA](https://github.com/taycaldwell/riot-api-java), an
  Allows your method to complete after waiting for the rate limit to end, no more null objects caused by rate limiting.
 - Silent fail  
  Does not end your program, even if there is an error. The methods simply return null.
+- High level API
+ Allows you to call methods unavailable on the vanilla Riot API, such as searching the database by name, sorting champion masteries, etc.
 ## Disclaimer
 This product is not endorsed, certified or otherwise approved in any way by Riot Games, Inc. or any of its affiliates.
 
