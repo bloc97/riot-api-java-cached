@@ -129,11 +129,12 @@ public class ChampionMasteryDatabase implements CachedDatabase {
                 comparator = (ChampionMastery o1, ChampionMastery o2) -> o1.getChampionId() - o2.getChampionId();
                 break;
             case LEVEL:
-                comparator = (ChampionMastery o1, ChampionMastery o2) -> o1.getChampionLevel() - o2.getChampionLevel();
+                comparator = (ChampionMastery o1, ChampionMastery o2) -> (o1.getChampionLevel() == o2.getChampionLevel()) ? (int)(o1.getChampionPoints() - o2.getChampionPoints()) : (o1.getChampionLevel() - o2.getChampionLevel());
                 break;
             case POINTS:
                 //Assuming it is already sorted by points
                 //comparator = (ChampionMastery o1, ChampionMastery o2) -> (int)(o1.getChampionPoints( )- o2.getChampionPoints());
+                Collections.reverse(list);
                 break;
             case LASTPLAYED:
                 comparator = (ChampionMastery o1, ChampionMastery o2) -> (int)(o1.getLastPlayTime() - o2.getLastPlayTime());

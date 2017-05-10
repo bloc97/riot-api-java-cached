@@ -32,10 +32,13 @@ import net.rithms.riot.api.endpoints.static_data.dto.Realm;
 import net.rithms.riot.api.endpoints.static_data.dto.RuneList;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
 import net.bloc97.riot.cache.static_data.dto.VersionData;
+import net.rithms.riot.api.endpoints.static_data.constant.ChampListData;
 import net.rithms.riot.api.endpoints.static_data.constant.ItemData;
+import net.rithms.riot.api.endpoints.static_data.constant.Locale;
 import net.rithms.riot.api.endpoints.static_data.constant.MasteryData;
 import net.rithms.riot.api.endpoints.static_data.constant.RuneData;
 import net.rithms.riot.api.endpoints.static_data.constant.SpellData;
+import net.rithms.riot.api.endpoints.static_data.constant.SpellListData;
 import net.rithms.riot.api.endpoints.static_data.dto.LanguageStrings;
 import net.rithms.riot.api.endpoints.static_data.dto.Mastery;
 import net.rithms.riot.api.endpoints.static_data.dto.Rune;
@@ -70,7 +73,7 @@ public class StaticDataDatabase implements CachedDatabase {
         T data = null;
         try {
             if (type.equals(ChampionList.class)) {
-                data = (T) rApi.getDataChampionList(platform);
+                data = (T) rApi.getDataChampionList(platform, null, null, true, (ChampListData) null);
             } else if (type.equals(ItemList.class)) {
                 data = (T) rApi.getDataItemList(platform);
             } else if (type.equals(LanguageStrings.class)) {
@@ -88,7 +91,7 @@ public class StaticDataDatabase implements CachedDatabase {
             } else if (type.equals(RuneList.class)) {
                 data = (T) rApi.getDataRuneList(platform);
             } else if (type.equals(SummonerSpellList.class)) {
-                data = (T) rApi.getDataSummonerSpellList(platform);
+                data = (T) rApi.getDataSummonerSpellList(platform, null, null, true, (SpellListData) null);
             } else if (type.equals(VersionData.class)) {
                 data = (T) new VersionData(rApi.getDataVersions(platform));
             }
@@ -149,12 +152,12 @@ public class StaticDataDatabase implements CachedDatabase {
     private <T> T getDataList(Class<T> type) {
         Date now = new Date();
         
-        GenericObjectCache cache = listCache.get(type);
+        GenericObjectCache<T> cache = listCache.get(type);
         if (cache == null) {
             return updateListData(type, now);
         }
         if (cache.isValid(now)) {
-            return (T) cache.getObject();
+            return cache.getObject();
         } else {
             return updateListData(type, now);
         }
@@ -214,6 +217,23 @@ public class StaticDataDatabase implements CachedDatabase {
     }
     
     //Extra functions
+    
+    //Partial Entry Getters (They contain partial data, useful to find names)
+    public Champion getDataChampionPartial(long id) {
+        return getDataChampionList().getData().get(""+id);
+    }
+    public Item getDataItemPartial(long id) {
+        return getDataItemList().getData().get(""+id);
+    }
+    public Mastery getDataMasteryPartial(long id) {
+        return getDataMasteryList().getData().get(""+id);
+    }
+    public Rune getDataRunePartial(long id) {
+        return getDataRuneList().getData().get(""+id);
+    }
+    public SummonerSpell getDataSummonerSpellPartial(long id) {
+        return getDataSummonerSpellList().getData().get(""+id);
+    }
     
     //List Sorters
     

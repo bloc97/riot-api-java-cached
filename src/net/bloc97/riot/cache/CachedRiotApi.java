@@ -45,7 +45,6 @@ public class CachedRiotApi {
     private final RiotApi rApi;
     private final Platform platform;
     
-    
     @Deprecated
     public final StatsDatabase Stats;
     

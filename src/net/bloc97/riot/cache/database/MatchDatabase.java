@@ -187,7 +187,7 @@ public class MatchDatabase implements CachedDatabase {
         return fullList;
     }
     
-    public int tryGetParticipantId(Match match, long summonerId) {
+    public int tryGetParticipantId(Match match, long summonerId, CachedRiotApi api) {
         return 0;
         //Use various data to try and find participan id when they are hidden
     }
