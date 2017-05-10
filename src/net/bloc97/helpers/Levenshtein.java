@@ -29,7 +29,7 @@ public class Levenshtein {
         if (longString.startsWith(shortString)) {
             final int longLength = longString.length();
             final int shortLength = shortString.length();
-            return (int)Math.log10(longLength - shortLength)+1;
+            return (int)Math.log10(longLength - shortLength);
             //return (int)Math.pow(longLength - shortLength, 1/4f);
             //return (int)Math.sqrt(longLength - shortLength);
             //return 0;
@@ -38,10 +38,19 @@ public class Levenshtein {
         return distance(longString, shortString);
         //return Integer.MAX_VALUE;
     }
+    public static int subwordDistance(String longString, String shortString) { //Use this to weight in favour of a subword or substring
+        //Eg "Auto" will be closer to "Cold Auto" than "Audi" if used with Math.min(Levenstehin, subwordDistance)
+        if (longString.startsWith(shortString) || longString.contains(" " + shortString)) {
+            final int longLength = longString.length();
+            final int shortLength = shortString.length();
+            return (int)Math.log10(longLength - shortLength);
+        }
+        return distance(longString, shortString);
+    }
     
     public static String toLowerCase(String s) {
         if (s == null) {
-            return "";
+            return "                                         ";
         } else {
             return s.toLowerCase();
         }

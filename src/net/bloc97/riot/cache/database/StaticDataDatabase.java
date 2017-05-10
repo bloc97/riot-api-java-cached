@@ -222,35 +222,35 @@ public class StaticDataDatabase {
         final String nameL = name.toLowerCase();
         List<Champion> list = new ArrayList<>(getDataChampionList().getData().values());
         
-        Collections.sort(list, (Champion o1, Champion o2) -> Levenshtein.substringDistance(Levenshtein.toLowerCase(o1.getKey()), nameL) - Levenshtein.substringDistance(Levenshtein.toLowerCase(o2.getKey()), nameL));
+        Collections.sort(list, (Champion o1, Champion o2) -> Levenshtein.subwordDistance(Levenshtein.toLowerCase(o1.getKey()), nameL) - Levenshtein.subwordDistance(Levenshtein.toLowerCase(o2.getKey()), nameL));
         return list;
     }
     public List<Item> getDataItemListByClosest(String name) {
         final String nameL = name.toLowerCase();
         List<Item> list = new ArrayList<>(getDataItemList().getData().values());
         
-        Collections.sort(list, (Item o1, Item o2) -> Levenshtein.substringDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.substringDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
+        Collections.sort(list, (Item o1, Item o2) -> Levenshtein.subwordDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.subwordDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
         return list;
     }
     public List<Mastery> getDataMasteryListByClosest(String name) {
         final String nameL = name.toLowerCase();
         List<Mastery> list = new ArrayList<>(getDataMasteryList().getData().values());
         
-        Collections.sort(list, (Mastery o1, Mastery o2) -> Levenshtein.substringDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.substringDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
+        Collections.sort(list, (Mastery o1, Mastery o2) -> Levenshtein.subwordDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.subwordDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
         return list;
     }
     public List<Rune> getDataRuneListByClosest(String name) {
         final String nameL = name.toLowerCase();
         List<Rune> list = new ArrayList<>(getDataRuneList().getData().values());
         
-        Collections.sort(list, (Rune o1, Rune o2) -> Levenshtein.substringDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.substringDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
+        Collections.sort(list, (Rune o1, Rune o2) -> Levenshtein.subwordDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.subwordDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
         return list;
     }
     public List<SummonerSpell> getDataSummonerSpellListByClosest(String name) {
         final String nameL = name.toLowerCase();
         List<SummonerSpell> list = new ArrayList<>(getDataSummonerSpellList().getData().values());
         
-        Collections.sort(list, (SummonerSpell o1, SummonerSpell o2) -> Levenshtein.substringDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.substringDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
+        Collections.sort(list, (SummonerSpell o1, SummonerSpell o2) -> Levenshtein.subwordDistance(Levenshtein.toLowerCase(o1.getName()), nameL) - Levenshtein.subwordDistance(Levenshtein.toLowerCase(o2.getName()), nameL));
         return list;
     }
     
@@ -279,7 +279,7 @@ public class StaticDataDatabase {
                 continue;
             }
             String dtoName = entry.getValue().getKey().toLowerCase();
-            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            int newDistanceScore = Levenshtein.subwordDistance(dtoName, name);
             if (newDistanceScore < distanceScore) {
                 distanceScore = newDistanceScore;
                 dto = entry.getValue();
@@ -311,7 +311,7 @@ public class StaticDataDatabase {
                 continue;
             }
             String dtoName = entry.getValue().getName().toLowerCase();
-            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            int newDistanceScore = Levenshtein.subwordDistance(dtoName, name);
             if (newDistanceScore < distanceScore) {
                 distanceScore = newDistanceScore;
                 dto = entry.getValue();
@@ -343,7 +343,7 @@ public class StaticDataDatabase {
                 continue;
             }
             String dtoName = entry.getValue().getName().toLowerCase();
-            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            int newDistanceScore = Levenshtein.subwordDistance(dtoName, name);
             if (newDistanceScore < distanceScore) {
                 distanceScore = newDistanceScore;
                 dto = entry.getValue();
@@ -375,7 +375,7 @@ public class StaticDataDatabase {
                 continue;
             }
             String dtoName = entry.getValue().getName().toLowerCase();
-            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            int newDistanceScore = Levenshtein.subwordDistance(dtoName, name);
             if (newDistanceScore < distanceScore) {
                 distanceScore = newDistanceScore;
                 dto = entry.getValue();
@@ -407,7 +407,7 @@ public class StaticDataDatabase {
                 continue;
             }
             String dtoName = entry.getValue().getName().toLowerCase();
-            int newDistanceScore = Levenshtein.substringDistance(dtoName, name);
+            int newDistanceScore = Levenshtein.subwordDistance(dtoName, name);
             if (newDistanceScore < distanceScore) {
                 distanceScore = newDistanceScore;
                 dto = entry.getValue();
