@@ -3,6 +3,15 @@
 A extremely high-level, simple to use, Cached Riot Games API wrapper for Java.
 This API wraps [RIOT-API-JAVA](https://github.com/taycaldwell/riot-api-java), and uses internal caching to migitate unnecessary API calls.
 
+## Features
+- Caching  
+ Allows you to fetch similar data without spending your API Rate.
+- Wait on rate limit  
+ Allows your method to complete after waiting for the rate limit to end, no more null objects caused by rate limiting.
+- Silent fail  
+ Does not end your program, even if there is an error. The methods simply return null.
+- High level API  
+ Allows you to call methods unavailable on the vanilla Riot API, such as searching the database by name, sorting champion masteries, etc.
 ## Disclaimer
 This product is not endorsed, certified or otherwise approved in any way by Riot Games, Inc. or any of its affiliates.
 
@@ -20,8 +29,8 @@ There is not yet an documentation, function names are what they describe.
 The documentation for riot-api-java can be found [here.](http://taycaldwell.com/riot-api-java/doc/)
 
 ## API Versions
-The current version of this library supports, and only supports the following Riot Games API versions:
-**API** | *(Caching Life)*
+The current version of this library supports, and only supports the following Riot Games API versions:  
+ **API** | *(Caching Life)*  
 - **CHAMPION-MASTERY-V3** (20 Minutes)
 - **CHAMPION-V3** (12 Hours)
 - **LEAGUE-V3** (1 Hour)
