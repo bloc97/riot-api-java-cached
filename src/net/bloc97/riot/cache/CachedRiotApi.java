@@ -65,7 +65,7 @@ public class CachedRiotApi {
         
         ApiConfig config = new ApiConfig();
         config.setKey(apiKey);
-        config.setRespectRateLimit(true);
+        config.setRespectRateLimit(false);
         config.setRequestTimeout(10000);
         
         this.rApi = new RiotApi(config);

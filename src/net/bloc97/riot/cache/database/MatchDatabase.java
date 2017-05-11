@@ -16,10 +16,15 @@ import net.bloc97.riot.cache.CachedRiotApi;
 import static net.bloc97.riot.cache.CachedRiotApi.isRateLimited;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
+import net.rithms.riot.api.endpoints.masteries.dto.MasteryPage;
+import net.rithms.riot.api.endpoints.masteries.dto.MasteryPages;
+import net.rithms.riot.api.endpoints.match.dto.Mastery;
 import net.rithms.riot.api.endpoints.match.dto.Match;
 import net.rithms.riot.api.endpoints.match.dto.MatchList;
 import net.rithms.riot.api.endpoints.match.dto.MatchReference;
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline;
+import net.rithms.riot.api.endpoints.match.dto.Participant;
+import net.rithms.riot.api.endpoints.match.dto.ParticipantIdentity;
 import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
 import net.rithms.riot.api.request.ratelimit.RateLimitException;
 import net.rithms.riot.constant.Platform;
@@ -187,9 +192,173 @@ public class MatchDatabase implements CachedDatabase {
         return fullList;
     }
     
-    public int tryGetParticipantId(Match match, long summonerId, CachedRiotApi api) {
-        return 0;
+    public Participant tryGetParticipant(MatchReference match, Match fullMatch, long summonerId, boolean doTryGuess, CachedRiotApi api) {
+        Participant unknownParticipant = fullMatch.getParticipantBySummonerId(summonerId);
+        if (unknownParticipant != null) {
+            if (unknownParticipant.getChampionId() == match.getChampion()) { //Found participant, just to make sure
+                return unknownParticipant;
+            }
+        }
         //Use various data to try and find participan id when they are hidden
+        int championId = match.getChampion();
+        String lane = match.getLane();
+        String role = match.getRole();
+        
+        List<Participant> participants = fullMatch.getParticipants();
+        
+        return filterParticipantLevel1(participants, championId, lane, role, summonerId, doTryGuess, api);
+    }
+    
+    private Participant filterParticipantLevel1(List<Participant> participants, int championId, String lane, String role, long summonerId, boolean doTryGuess, CachedRiotApi api) {
+        List<Participant> foundParticipants = new LinkedList<>();
+        for (Participant participant : participants) {
+            int thisChampionId = participant.getChampionId();
+            if (thisChampionId == championId) {
+                foundParticipants.add(participant);
+            }
+        }
+        if (foundParticipants.size() == 1) { //If after small search only one remains
+            return foundParticipants.get(0);
+        } else if (foundParticipants.size() > 1) {
+            return filterParticipantLevel2(foundParticipants, championId, lane, role, summonerId, doTryGuess, api);
+        } else {
+            return null;
+        }
+    }
+    private Participant filterParticipantLevel2(List<Participant> participants, int championId, String lane, String role, long summonerId, boolean doTryGuess, CachedRiotApi api) {
+        List<Participant> foundParticipants = new LinkedList<>();
+        for (Participant participant : participants) { //Bigger search
+            int thisChampionId = participant.getChampionId();
+            String thisRole = participant.getTimeline().getRole();
+            if (thisChampionId == championId && thisRole.equals(role)) {
+                foundParticipants.add(participant);
+            }
+        }
+        if (foundParticipants.size() == 1) { //If after small search only one remains
+            return foundParticipants.get(0);
+        } else if (foundParticipants.size() > 1) {
+            return filterParticipantLevel3(foundParticipants, championId, lane, role, summonerId, doTryGuess, api);
+        } else {
+            return null;
+        }
+    }
+    private Participant filterParticipantLevel3(List<Participant> participants, int championId, String lane, String role, long summonerId, boolean doTryGuess, CachedRiotApi api) {
+        List<Participant> foundParticipants = new LinkedList<>();
+        for (Participant participant : participants) { //Even Bigger search
+            int thisChampionId = participant.getChampionId();
+            String thisLane = participant.getTimeline().getLane();
+            String thisRole = participant.getTimeline().getRole();
+            if (thisChampionId == championId && isLanesEqual(lane, thisLane) && thisRole.equals(role)) {
+                foundParticipants.add(participant);
+            }
+        }
+        if (foundParticipants.size() == 1) { //If after small search only one remains
+            return foundParticipants.get(0);
+        } else if (foundParticipants.size() > 1) {
+            if (doTryGuess) {
+                return deepParticipantSearch(participants, summonerId, api);
+            }
+            return null;
+        } else {
+            return null;
+        }
+    }
+    
+    
+    private Participant deepParticipantSearch(List<Participant> participants, long summonerId, CachedRiotApi api) {
+        
+        List<Participant> newParticipants = new LinkedList<>();
+        MasteryPages masteryPages = api.Masteries.getMasteriesBySummoner(summonerId);
+        
+        for (Participant participant : participants) {
+            List<Mastery> thisMasteryList = participant.getMasteries();
+            for (MasteryPage masteryPage : masteryPages.getPages()) {
+                if (isMasteryPageEqualToMasteryList(masteryPage, thisMasteryList)) {
+                    newParticipants.add(participant);
+                }
+            }
+        }
+        if (newParticipants.size() == 1) {
+            return newParticipants.get(0);
+        } else {
+            System.out.println(newParticipants.size());
+            return null;
+        }
+        
+    }
+    public boolean isMasteryPageEqualToMasteryList(MasteryPage page, List<Mastery> list) {
+        List<ComparableMastery> list1 = convertMasteryList(page.getMasteries());
+        List<ComparableMastery> list2 = convertMatchMasteryList(list);
+        return list1.containsAll(list2) && list2.containsAll(list1);
+    }
+    
+    
+    private List<ComparableMastery> convertMasteryList(List<net.rithms.riot.api.endpoints.masteries.dto.Mastery> masteryList) {
+        LinkedList<ComparableMastery> list = new LinkedList<>();
+        for (net.rithms.riot.api.endpoints.masteries.dto.Mastery mastery : masteryList) {
+            list.add(new ComparableMastery(mastery));
+        }
+        return list;
+    }
+    private List<ComparableMastery> convertMatchMasteryList(List<net.rithms.riot.api.endpoints.match.dto.Mastery> masteryList) {
+        LinkedList<ComparableMastery> list = new LinkedList<>();
+        for (net.rithms.riot.api.endpoints.match.dto.Mastery mastery : masteryList) {
+            list.add(new ComparableMastery(mastery));
+        }
+        return list;
+    }
+    
+    private class ComparableMastery {
+	private int masteryId;
+	private int rank;
+
+        private ComparableMastery(Mastery mastery) {
+            masteryId = mastery.getMasteryId();
+            rank = mastery.getRank();
+        }
+        private ComparableMastery(net.rithms.riot.api.endpoints.masteries.dto.Mastery mastery) {
+            masteryId = mastery.getId();
+            rank = mastery.getRank();
+        }
+        
+	public int getMasteryId() {
+		return masteryId;
+	}
+	
+	public int getRank() {
+		return rank;
+	}
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof ComparableMastery) {
+                ComparableMastery m = (ComparableMastery) o;
+                if (m.rank == rank && m.masteryId == masteryId) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    
+    private boolean isLanesEqual(String lane1, String lane2) {
+        if (lane1.equals(lane2)) {
+            return true;
+        }
+        if (lane1.equals("MID")) {
+            lane1 = "MIDDLE";
+        } else if (lane1.equals("BOT")) {
+            lane1 = "BOTTOM";
+        }
+        if (lane2.equals("MID")) {
+            lane2 = "MIDDLE";
+        } else if (lane2.equals("BOT")) {
+            lane2 = "BOTTOM";
+        }
+        if (lane1.equals(lane2)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
