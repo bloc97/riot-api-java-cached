@@ -97,6 +97,15 @@ public class CachedRiotApi {
                 System.out.println(e);
             }
         }
+        if (ex.getMessage().equalsIgnoreCase("Forbidden")) {
+            try {
+                System.out.println("Blacklisted, sleeping forever.");
+                Thread.sleep(Long.MAX_VALUE);
+                return false;
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
+        }
         return false;
     }
     
