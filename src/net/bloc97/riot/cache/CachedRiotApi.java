@@ -65,7 +65,7 @@ public class CachedRiotApi {
         
         ApiConfig config = new ApiConfig();
         config.setKey(apiKey);
-        config.setRespectRateLimit(false);
+        config.setRespectRateLimit(true);
         config.setRequestTimeout(10000);
         
         this.rApi = new RiotApi(config);
@@ -90,7 +90,8 @@ public class CachedRiotApi {
     public static boolean isRateLimited(RiotApiException ex) {
         if (ex instanceof RateLimitException) {
             try {
-                Thread.sleep(((RateLimitException) ex).getRetryAfter()+100);
+                System.out.println("Rate Limited, Retrying in: " + ((RateLimitException) ex).getRetryAfter());
+                Thread.sleep(((RateLimitException) ex).getRetryAfter()*1000+1000);
                 return true;
             } catch (InterruptedException e) {
                 System.out.println(e);

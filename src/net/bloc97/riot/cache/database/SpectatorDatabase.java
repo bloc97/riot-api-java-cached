@@ -50,7 +50,7 @@ public class SpectatorDatabase implements CachedDatabase {
             if (isRateLimited(ex)) {
                 return updateActiveGameBySummoner(id, now);
             }
-            System.out.println(ex);
+            //System.out.println(ex); //no need to spam user about user inactivity
             currentGameCache.remove(id);
         }
         if (data != null) {
